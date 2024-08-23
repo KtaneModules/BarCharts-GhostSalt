@@ -1,0 +1,10 @@
+{
+  "name": "GSBarCharts-Editor",
+  "references": [
+    "GSBarCharts"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": []
+}
