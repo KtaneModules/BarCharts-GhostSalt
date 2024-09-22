@@ -63,7 +63,11 @@
         ]
 
         var colors = ["Red", "Yellow", "Green", "Blue"];
+
+        var rules = ["leftmost bar","second-leftmost bar","second-rightmost bar","rightmost bar", "shortest bar","second-shortest bar","second-longest bar", "longest bar","first bar in the order"];
         
+        var yAxis = [["Popularity","shortest","tallest"],["Frequency","tallest","shortest"],["Responses","leftmost","rightmost"],["Occurances","rightmost","leftmost"],["Density","smaller value","greater value"],["Magnitude","greater value","smaller value"]];
+
         function setDefaultRules(rnd) 
         {
 
@@ -98,6 +102,16 @@
             var b = document.getElementsByClassName("equalise");
                 for (var j = 0; j < 4; j++)
                     b[0].cells[j].textContent = colors[j];
+
+            rules = rnd.shuffleFisherYates(rules);
+            var c = document.getElementById("b-rules");
+            c.innerHTML = `Let B = the sum of the values of the ${rules[0]}, the ${rules[1]} and the ${rules[2]}. Subtract 3 until this value is less than 3, then add 1 &mdash; the B<sup>th</sup> bar from left to right, skipping over the first bar in the order, is the second bar in the order.`;
+        
+            yAxis = rnd.shuffleFisherYates(yAxis);
+            var d = document.getElementById("if-y-axis");
+            var e = document.getElementById("else-y-axis");
+            d.innerHTML = `If the unit on the left is &ldquo;${yAxis[0][0]}&rdquo;, the ${yAxis[0][1]} of the two unordered bars is third in the order, and the ${yAxis[0][2]} is fourth.`;
+            e.innerHTML = `Otherwise, if the unit on the left is &ldquo;${yAxis[1][0]}&rdquo;, the ${yAxis[1][1]} is third in the order, and the ${yAxis[1][2]} is fourth.`;
         }
     </script>
 </head>
@@ -126,11 +140,11 @@
                 <tr class="big-number"><td>0</td><td>1</td><td>2</td><td>3</td></tr>
                 </table>
                 
-                <p>Let B = the sum of the values of the leftmost bar, the shortest bar and the first bar in the order. Subtract 3 until this value is less than 3, then add 1 &mdash; the B<sup>th</sup> bar from left to right, skipping over the first bar in the order, is the second bar in the order.</p>
+                <p id="b-rules">Let B = the sum of the values of the leftmost bar, the shortest bar and the first bar in the order. Subtract 3 until this value is less than 3, then add 1 &mdash; the B<sup>th</sup> bar from left to right, skipping over the first bar in the order, is the second bar in the order.</p>
                 
                 <ul>
-                <li>If the unit on the left is &ldquo;Popularity&rdquo;, the shortest of the two unordered bars is third in the order, and the tallest is fourth.</li>
-                <li>Otherwise, if the unit on the left is &ldquo;Frequency&rdquo;, the tallest is third in the order, and the shortest is fourth.</li>
+                <li id="if-y-axis">If the unit on the left is &ldquo;Popularity&rdquo;, the shortest of the two unordered bars is third in the order, and the tallest is fourth.</li>
+                <li id="else-y-axis">Otherwise, if the unit on the left is &ldquo;Frequency&rdquo;, the tallest is third in the order, and the shortest is fourth.</li>
                 </ul>
                 
             </div>

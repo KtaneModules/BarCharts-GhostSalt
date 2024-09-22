@@ -27,9 +27,9 @@ namespace Assets
                 case YAxisLabel.Occurances:
                     return "is more to the right";
                 case YAxisLabel.Density:
-                    return "has a smaller color value";
+                    return "has a smaller value";
                 case YAxisLabel.Magnitude:
-                    return "has a greater color value";
+                    return "has a greater value";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(label), label, null);
             }
