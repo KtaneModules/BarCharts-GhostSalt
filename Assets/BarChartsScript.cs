@@ -23,6 +23,8 @@ public class BarChartsScript : MonoBehaviour
     public Text[] BarTextRends;
     public MeshRenderer ModuleBG;
 
+    public KMRuleSeedable RuleSeed;
+
     private const float RandomTolerance = 0.45f;
     private static readonly VariableSet[] AllVariableSets = new[]
     {
@@ -49,6 +51,8 @@ public class BarChartsScript : MonoBehaviour
         new VariableSet("Rennaissance Composers", new[]{ "Lasso", "Tallis", "Byrd", "Monteverdi", "Taverner", "Janequin", "Palestrina", "Gesualdo", "Kirbye", "Prez", "Vautor", "Morley", "Gibbons", "Weelkes" }),
         new VariableSet("20th Century Composers", new[]{ "Copland", "Bernstein", "Prokofiev", "Williams", "Cage", "Holst", "Schoenberg", "Debussy", "Bartók", "Elgar", "Gershwin", "Ravel", "Stravinsky", "Britten", "Strauss" })
     };
+
+    private VariableSet[] VariableSets;
 
     private static readonly Dictionary<string, string> Deabbreviator = new Dictionary<string, string>
     {
@@ -87,6 +91,11 @@ public class BarChartsScript : MonoBehaviour
         {
             return new VariableSet(Name, Variables.ToArray().Shuffle().Take(4).ToArray());
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0}: {1}", Name, string.Join(",", Variables));
+        }
     }
 
     private Vector3 FindBarScale(float height, int type, float t)
@@ -113,6 +122,21 @@ public class BarChartsScript : MonoBehaviour
         return new Color(0.75f, 0.75f, 0.75f);
     }
 
+    void SetupRuleseed()
+    {
+        MonoRandom rng = RuleSeed.GetRNG();
+        if(rng.Seed == 1)
+        {
+            Debug.LogFormat("Ruleseed is 1.");
+            VariableSets = AllVariableSets.Take(22).ToArray(); //Take the original 22 lists
+        }
+        else
+        {
+            VariableSets = AllVariableSets.OrderBy(_ => rng.NextDouble()).Take(22).Select(vs => new VariableSet(vs.Name,vs.Variables.OrderBy(_ => rng.NextDouble()).ToArray())).ToArray();
+            Debug.LogFormat("<Bar Charts> Ruleseed {0}: {1}", rng.Seed, string.Join("\r\n", VariableSets.Select(v => v.ToString()).ToArray()));
+        }
+    }
+
     void Awake()
     {
         _moduleID = _moduleIdCounter++;
@@ -133,6 +157,7 @@ public class BarChartsScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        SetupRuleseed();
         Calculate();
     }
 
@@ -149,7 +174,7 @@ public class BarChartsScript : MonoBehaviour
         UnitIsPopularity = Rnd.Range(0, 2) == 0;
         UnitRend.text = UnitIsPopularity ? "Popularity" : "Frequency";
         BarColours = Enumerable.Range(0, 4).ToList().Shuffle();
-        ChosenSet = AllVariableSets.PickRandom().Copy();
+        ChosenSet = VariableSets.PickRandom().Copy();
         var shuffledSet = ChosenSet.Shuffle();
         for (int i = 0; i < BarTextRends.Length; i++)
             BarTextRends[i].text = shuffledSet.Variables[i];
