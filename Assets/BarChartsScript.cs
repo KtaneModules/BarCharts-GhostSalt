@@ -142,14 +142,14 @@ public class BarChartsScript : MonoBehaviour
         if(rng.Seed == 1)
         {
             Debug.LogFormat("Ruleseed is 1.");
-            VariableSets = AllVariableSets.Take(22).ToArray(); //Take the original 22 lists
+            VariableSets = AllVariableSets;
             ColorValues = Enumerable.Range(0, 4).ToDictionary(x => (BarColor)x, x => x);
             BarRules = new BarRule[] { BarRule.Leftmost, BarRule.Shortest, BarRule.FirstInOrder };
             YAxisLabels = new YAxisLabel[] { YAxisLabel.Popularity, YAxisLabel.Frequency };
         }
         else
         {
-            VariableSets = AllVariableSets.OrderBy(_ => rng.NextDouble()).Take(22).Select(vs => new VariableSet(vs.Name,vs.Variables.OrderBy(_ => rng.NextDouble()).ToArray())).ToArray();
+            VariableSets = AllVariableSets.Select(vs => new VariableSet(vs.Name,rng.ShuffleFisherYates(vs.Variables))).ToArray();
             Debug.LogFormat("<Bar Charts> Ruleseed {0}: {1}", rng.Seed, string.Join("\r\n", VariableSets.Select(v => v.ToString()).ToArray()));
             List<int> ColorValueToRandomize = rng.ShuffleFisherYates(Enumerable.Range(0, 4).ToList());
             ColorValues = Enumerable.Range(0, 4).ToDictionary(x => (BarColor)x, x => ColorValueToRandomize[x]);
