@@ -66,6 +66,7 @@ public class BarChartsScript : MonoBehaviour
 
     private Dictionary<BarColor, int> ColorValues;
     private BarRule[] BarRules;
+    private YAxisLabel[] YAxisLabels;
 
     private VariableSet ChosenSet;
     private Coroutine InitAnimCoroutine;
@@ -73,7 +74,8 @@ public class BarChartsScript : MonoBehaviour
     private List<BarColor> BarColours = new List<BarColor>();
     private List<int> CorrectAnswer = new List<int>();
     private List<int> CorrectPresses = new List<int>();
-    private bool CannotPress = true, Solved, UnitIsPopularity;
+    private bool CannotPress = true, Solved;
+    private YAxisLabel yAxisLabel;
 
     private class VariableSet
     {
@@ -143,6 +145,7 @@ public class BarChartsScript : MonoBehaviour
             VariableSets = AllVariableSets.Take(22).ToArray(); //Take the original 22 lists
             ColorValues = Enumerable.Range(0, 4).ToDictionary(x => (BarColor)x, x => x);
             BarRules = new BarRule[] { BarRule.Leftmost, BarRule.Shortest, BarRule.FirstInOrder };
+            YAxisLabels = new YAxisLabel[] { YAxisLabel.Popularity, YAxisLabel.Frequency };
         }
         else
         {
@@ -153,6 +156,8 @@ public class BarChartsScript : MonoBehaviour
             Debug.LogFormat("<Bar Charts> Colors : {0}", string.Join(",", ColorValues.Select(x => $"{x.Key}=>{x.Value}").ToArray()));
             BarRules = rng.ShuffleFisherYates(Enum.GetValues(typeof(BarRule)).Cast<BarRule>().ToList()).Take(3).ToArray();
             Debug.LogFormat("<Bar Charts> Rules : {0}", string.Join(",", BarRules.Select(b=>b.ToString()).ToArray()));
+            YAxisLabels = rng.ShuffleFisherYates(Enum.GetValues(typeof(YAxisLabel)).Cast<YAxisLabel>().ToList()).Take(2).ToArray();
+            Debug.LogFormat("<Bar Charts> Labels : {0}", string.Join(",", YAxisLabels.Select(l => l.ToString()).ToArray()));
         }
     }
 
@@ -180,18 +185,12 @@ public class BarChartsScript : MonoBehaviour
         Calculate();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     void Calculate()
     {
         HeightOrder = Enumerable.Range(1, 4).Select(x => Rnd.Range(x - RandomTolerance, x + RandomTolerance)).ToList().Shuffle();
         var intHeightOrder = HeightOrder.Select(x => Mathf.RoundToInt(x)).ToList();
-        UnitIsPopularity = Rnd.Range(0, 2) == 0;
-        UnitRend.text = UnitIsPopularity ? "Popularity" : "Frequency";
+        yAxisLabel = YAxisLabels.PickRandom();
+        UnitRend.text = yAxisLabel.ToString();
         BarColours = Enumerable.Range(0, 4).Select(i => (BarColor)i).ToList().Shuffle();
         ChosenSet = VariableSets.PickRandom().Copy();
         var shuffledSet = ChosenSet.Shuffle();
@@ -236,39 +235,33 @@ public class BarChartsScript : MonoBehaviour
             bValues[0], bValues[1], bValues[2], CorrectAnswer.Last() + 1);
 
         var competitors = Enumerable.Range(0, 4).Except(CorrectAnswer).ToList();
-        if (UnitIsPopularity)
+        Debug.LogFormat("[Bar Charts #{0}] The unit on the left is {1}.", _moduleID, yAxisLabel);
+        IEnumerable<int> orderedCompetitors;
+        switch (yAxisLabel)
         {
-            Debug.LogFormat("[Bar Charts #{0}] The unit on the left is Popularity.", _moduleID);
-            if (intHeightOrder[competitors[0]] < intHeightOrder[competitors[1]])
-            {
-                CorrectAnswer.Add(competitors[0]);
-                CorrectAnswer.Add(competitors[1]);
-                Debug.LogFormat("[Bar Charts #{0}] Bar {1} is shorter than Bar {2}, so it is third in the order, and Bar {2} is fourth.", _moduleID, competitors[0] + 1, competitors[1] + 1);
-            }
-            else
-            {
-                CorrectAnswer.Add(competitors[1]);
-                CorrectAnswer.Add(competitors[0]);
-                Debug.LogFormat("[Bar Charts #{0}] Bar {1} is shorter than Bar {2}, so it is third in the order, and Bar {2} is fourth.", _moduleID, competitors[1] + 1, competitors[0] + 1);
-            }
+            case YAxisLabel.Popularity:
+                orderedCompetitors = competitors.OrderBy(c => intHeightOrder[c]);
+                break;
+            case YAxisLabel.Frequency:
+                orderedCompetitors = competitors.OrderByDescending(c => intHeightOrder[c]);
+                break;
+            case YAxisLabel.Repsonses:
+                orderedCompetitors = competitors.OrderBy(c => c);
+                break;
+            case YAxisLabel.Occurances:
+                orderedCompetitors = competitors.OrderByDescending(c => c);
+                break;
+            case YAxisLabel.Density:
+                orderedCompetitors = competitors.OrderBy(c => ColorValues[BarColours[c]]);
+                break;
+            case YAxisLabel.Magnitude:
+                orderedCompetitors = competitors.OrderByDescending(c => ColorValues[BarColours[c]]);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(yAxisLabel), yAxisLabel.ToString());
         }
-        else
-        {
-            Debug.LogFormat("[Bar Charts #{0}] The unit on the left is Frequency.", _moduleID);
-            if (intHeightOrder[competitors[0]] > intHeightOrder[competitors[1]])
-            {
-                CorrectAnswer.Add(competitors[0]);
-                CorrectAnswer.Add(competitors[1]);
-                Debug.LogFormat("[Bar Charts #{0}] Bar {1} is shorter than Bar {2}, so it is third in the order, and Bar {2} is fourth.", _moduleID, competitors[0] + 1, competitors[1] + 1);
-            }
-            else
-            {
-                CorrectAnswer.Add(competitors[1]);
-                CorrectAnswer.Add(competitors[0]);
-                Debug.LogFormat("[Bar Charts #{0}] Bar {1} is taller than Bar {2}, so it is third in the order, and Bar {2} is fourth.", _moduleID, competitors[1] + 1, competitors[0] + 1);
-            }
-        }
-
+        CorrectAnswer.AddRange(orderedCompetitors.ToList());
+        Debug.LogFormat("[Bar Charts #{0}] Bar {1} {2} than Bar {3}, so it is third in the order, and Bar {2} is fourth.", _moduleID, orderedCompetitors.ToList()[0] + 1, yAxisLabel.GetComparativeWord(), orderedCompetitors.ToList()[1] + 1);
         Debug.LogFormat("[Bar Charts #{0}] This means that the final order is {1}.", _moduleID, CorrectAnswer.Select(x => x + 1).Join(", "));
     }
 
