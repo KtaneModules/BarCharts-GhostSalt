@@ -6,6 +6,7 @@ using UnityEngine;
 using KModkit;
 using Rnd = UnityEngine.Random;
 using UnityEngine.UI;
+using Assets;
 
 public class BarChartsScript : MonoBehaviour
 {
@@ -23,32 +24,36 @@ public class BarChartsScript : MonoBehaviour
     public Text[] BarTextRends;
     public MeshRenderer ModuleBG;
 
+    public KMRuleSeedable RuleSeed;
+
     private const float RandomTolerance = 0.45f;
     private static readonly VariableSet[] AllVariableSets = new[]
     {
-        new VariableSet("Vehicles", new[]{ "Trains", "Lorries", "Cars", "Boats", "Planes", "Buses", "Bikes", "Tractors" }),
-        new VariableSet("Currencies", new[]{ "Rand", "Rouble", "Dollar", "Peso", "Dinar", "Krone", "Rupee", "Pound", "Franc", "Yen", "Euro", "Lira" }),
-        new VariableSet("Dwarf Planets", new[]{ "Eris", "Makemake", "Sedna", "Haumea", "Pluto", "Ceres", "Pallas", "Quaoar" }),
-        new VariableSet("Cast of Star Trek: TOS", new[]{ "Spock", "McCoy", "Scott", "Chekov", "Uhura", "Kirk", "Sulu" }),
-        new VariableSet("Cast of BFDI", new[]{ "Golf Ball", "Coiny", "Pin", "Ice Cube", "Spongy", "David", "Woody", "Snowball", "Pen", "Pencil", "Bubble", "Teardrop", "Eraser", "Flower", "Needle", "Rocky", "Firey", "Match", "Blocky", "Leafy", "Tennis Ball" }),
-        new VariableSet("Major Websites", new[]{ "Reddit", "Instagram", "YouTube", "Craigslist", "Google", "Facebook", "Amazon", "Twitter", "Wikipedia", "eBay" }),
-        new VariableSet("Esolangs", new[]{ "Funciton", "Shakespeare", "Brainf---", "Malbolge", "Piet", "Befunge", "Chef", "Intercal" }),
-        new VariableSet("Basic Shapes", new[]{ "Capsule", "Octahedron", "Cylinder", "Cube", "Cone", "Torus", "Prism", "Sphere" }),
-        new VariableSet("Four-Letter Countries", new[]{ "Togo", "Peru", "Iraq", "Chad", "Laos", "Mali", "Oman", "Fiji", "Cuba", "Iran", "Niue" }),
-        new VariableSet("European Capital Cities", new[]{ "Budapest", "Prague", "Stockholm", "Rome", "Paris", "Lisbon", "Minsk", "Vienna", "Moscow", "Madrid", "Bucharest", "London", "Kyiv", "Warsaw", "Brussels", "Glasgow", "Riga", "Berlin", "Athens" }),
-        new VariableSet("Coffee Types", new[]{ "Espresso", "Cappuccino", "Doppio", "Macchiato", "Flat White", "Latte", "Americano", "Cortado", "Mocha" }),
-        new VariableSet("Fruits", new[]{ "Lemon", "Grape", "Banana", "Cherry", "Orange", "Mango", "Apple", "Pineapple", "Watermelon", "Strawberry", "Kiwi" }),
-        new VariableSet("Pets", new[]{ "Hamster", "Ferret", "Bird", "Dog", "Tortoise", "Snake", "Cat", "Horse", "Spider", "Fish", "Rabbit" }),
-        new VariableSet("Zodiac Signs", new[]{ "Capricorn", "Gemini", "Taurus", "Aquarius", "Sagittarius", "Leo", "Pisces", "Cancer", "Virgo", "Scorpio", "Libra", "Aries" }),
-        new VariableSet("Vanilla Modules", new[]{ "Morse Code", "Knobs", "Simon Says", "The Button", "C. Discharge", "Wires", "Wire Seqs.", "Passwords", "Venting Gas", "Memory", "Mazes", "Cmp. Wires", "Keypads", "WOF" }),
-        new VariableSet("Non-Percussion Instruments", new[]{ "Viola", "Euphonium", "Trumpet", "Cor Anglais", "Bassoon", "Clarinet", "Trombone", "Flugelhorn", "Piccolo", "Harp", "French Horn", "Flute", "Oboe", "Tuba", "Violin", "Double Bass", "Cello", "Saxophone", "Cornet" }),
-        new VariableSet("Percussion Instruments", new[]{ "Tambourine", "Bass Drum", "Vibraphone", "Gong", "Glockenspiel", "Snare Drum", "Timpani", "Xylophone", "Marimba", "Triangle", "Cymbals" }),
         new VariableSet("C# Data Types", new[]{ "Character", "String", "Integer", "Long", "Boolean", "Double", "Float" }),
-        new VariableSet("Biscuits", new[]{ "Bourbon", "Party Ring", "Ginger Nut", "Finger", "Oreo", "Rich Tea", "Nice", "Hobnobs", "Choc. Chip", "Garibaldi", "Shortbread", "Malted Milk", "Digestive" }),
+        new VariableSet("Cast of Star Trek: TOS", new[]{ "Spock", "McCoy", "Scott", "Chekov", "Uhura", "Kirk", "Sulu" }),
         new VariableSet("James Bond Actors", new[]{ "Craig", "Brosnan", "Connery", "Lazenby", "Dalton", "Moore", "Niven" }),
+        new VariableSet("Basic Shapes", new[]{ "Capsule", "Octahedron", "Cylinder", "Cube", "Cone", "Torus", "Prism", "Sphere" }),
+        new VariableSet("Dwarf Planets", new[]{ "Eris", "Makemake", "Sedna", "Haumea", "Pluto", "Ceres", "Pallas", "Quaoar" }),
+        new VariableSet("Esolangs", new[]{ "Funciton", "Shakespeare", "Brainf---", "Malbolge", "Piet", "Befunge", "Chef", "Intercal" }),
+        new VariableSet("Vehicles", new[]{ "Trains", "Lorries", "Cars", "Boats", "Planes", "Buses", "Bikes", "Tractors" }),
+        new VariableSet("Coffee Types", new[]{ "Espresso", "Cappuccino", "Doppio", "Macchiato", "Flat White", "Latte", "Americano", "Cortado", "Mocha" }),
+        new VariableSet("Major Websites", new[]{ "Reddit", "Instagram", "YouTube", "Craigslist", "Google", "Facebook", "Amazon", "Twitter", "Wikipedia", "eBay" }),
+        new VariableSet("Four-Letter Countries", new[]{ "Togo", "Peru", "Iraq", "Chad", "Laos", "Mali", "Oman", "Fiji", "Cuba", "Iran", "Niue" }),
+        new VariableSet("Fruits", new[]{ "Lemon", "Grape", "Banana", "Cherry", "Orange", "Mango", "Apple", "Pineapple", "Watermelon", "Strawberry", "Kiwi" }),
+        new VariableSet("Percussion Instruments", new[]{ "Tambourine", "Bass Drum", "Vibraphone", "Gong", "Glockenspiel", "Snare Drum", "Timpani", "Xylophone", "Marimba", "Triangle", "Cymbals" }),
+        new VariableSet("Pets", new[]{ "Hamster", "Ferret", "Bird", "Dog", "Tortoise", "Snake", "Cat", "Horse", "Spider", "Fish", "Rabbit" }),
+        new VariableSet("Currencies", new[]{ "Rand", "Rouble", "Dollar", "Peso", "Dinar", "Krone", "Rupee", "Pound", "Franc", "Yen", "Euro", "Lira" }),
+        new VariableSet("Zodiac Signs", new[]{ "Capricorn", "Gemini", "Taurus", "Aquarius", "Sagittarius", "Leo", "Pisces", "Cancer", "Virgo", "Scorpio", "Libra", "Aries" }),
+        new VariableSet("Biscuits", new[]{ "Bourbon", "Party Ring", "Ginger Nut", "Finger", "Oreo", "Rich Tea", "Nice", "Hobnobs", "Choc. Chip", "Garibaldi", "Shortbread", "Malted Milk", "Digestive" }),
         new VariableSet("Rennaissance Composers", new[]{ "Lasso", "Tallis", "Byrd", "Monteverdi", "Taverner", "Janequin", "Palestrina", "Gesualdo", "Kirbye", "Prez", "Vautor", "Morley", "Gibbons", "Weelkes" }),
-        new VariableSet("20th Century Composers", new[]{ "Copland", "Bernstein", "Prokofiev", "Williams", "Cage", "Holst", "Schoenberg", "Debussy", "Bartók", "Elgar", "Gershwin", "Ravel", "Stravinsky", "Britten", "Strauss" })
+        new VariableSet("Vanilla Modules", new[]{ "Morse Code", "Knobs", "Simon Says", "The Button", "C. Discharge", "Wires", "Wire Seqs.", "Passwords", "Venting Gas", "Memory", "Mazes", "Cmp. Wires", "Keypads", "WOF" }),
+        new VariableSet("20th Century Composers", new[]{ "Copland", "Bernstein", "Prokofiev", "Williams", "Cage", "Holst", "Schoenberg", "Debussy", "Bartók", "Elgar", "Gershwin", "Ravel", "Stravinsky", "Britten", "Strauss" }),
+        new VariableSet("European Capital Cities", new[]{ "Budapest", "Prague", "Stockholm", "Rome", "Paris", "Lisbon", "Minsk", "Vienna", "Moscow", "Madrid", "Bucharest", "London", "Kyiv", "Warsaw", "Brussels", "Glasgow", "Riga", "Berlin", "Athens" }),
+        new VariableSet("Non-Percussion Instruments", new[]{ "Viola", "Euphonium", "Trumpet", "Cor Anglais", "Bassoon", "Clarinet", "Trombone", "Flugelhorn", "Piccolo", "Harp", "French Horn", "Flute", "Oboe", "Tuba", "Violin", "Double Bass", "Cello", "Saxophone", "Cornet" }),
+        new VariableSet("Cast of BFDI", new[]{ "Golf Ball", "Coiny", "Pin", "Ice Cube", "Spongy", "David", "Woody", "Snowball", "Pen", "Pencil", "Bubble", "Teardrop", "Eraser", "Flower", "Needle", "Rocky", "Firey", "Match", "Blocky", "Leafy", "Tennis Ball" }),
     };
+
+    private VariableSet[] VariableSets;
 
     private static readonly Dictionary<string, string> Deabbreviator = new Dictionary<string, string>
     {
@@ -59,13 +64,18 @@ public class BarChartsScript : MonoBehaviour
         { "Choc. Chip", "Chocolate Chip" }
     };
 
+    private Dictionary<BarColor, int> ColorValues;
+    private BarRule[] BarRules;
+    private YAxisLabel[] YAxisLabels;
+
     private VariableSet ChosenSet;
     private Coroutine InitAnimCoroutine;
     private List<float> HeightOrder = new List<float>();
-    private List<int> BarColours = new List<int>();
+    private List<BarColor> BarColours = new List<BarColor>();
     private List<int> CorrectAnswer = new List<int>();
     private List<int> CorrectPresses = new List<int>();
-    private bool CannotPress = true, Solved, UnitIsPopularity;
+    private bool CannotPress = true, Solved;
+    private YAxisLabel yAxisLabel;
 
     private class VariableSet
     {
@@ -87,6 +97,19 @@ public class BarChartsScript : MonoBehaviour
         {
             return new VariableSet(Name, Variables.ToArray().Shuffle().Take(4).ToArray());
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0}: {1}", Name, string.Join(",", Variables));
+        }
+    }
+
+    private enum BarColor : int
+    {
+        Red = 0,
+        Yellow,
+        Green,
+        Blue
     }
 
     private Vector3 FindBarScale(float height, int type, float t)
@@ -113,6 +136,31 @@ public class BarChartsScript : MonoBehaviour
         return new Color(0.75f, 0.75f, 0.75f);
     }
 
+    void SetupRuleseed()
+    {
+        MonoRandom rng = RuleSeed.GetRNG();
+        if(rng.Seed == 1)
+        {
+            Debug.LogFormat("Ruleseed is 1.");
+            VariableSets = AllVariableSets;
+            ColorValues = Enumerable.Range(0, 4).ToDictionary(x => (BarColor)x, x => x);
+            BarRules = new BarRule[] { BarRule.Leftmost, BarRule.Shortest, BarRule.FirstInOrder };
+            YAxisLabels = new YAxisLabel[] { YAxisLabel.Popularity, YAxisLabel.Frequency };
+        }
+        else
+        {
+            VariableSets = AllVariableSets.Select(vs => new VariableSet(vs.Name,rng.ShuffleFisherYates(vs.Variables))).ToArray();
+            Debug.LogFormat("<Bar Charts> Ruleseed {0}: {1}", rng.Seed, string.Join("\r\n", VariableSets.Select(v => v.ToString()).ToArray()));
+            List<int> ColorValueToRandomize = rng.ShuffleFisherYates(Enumerable.Range(0, 4).ToList());
+            ColorValues = Enumerable.Range(0, 4).ToDictionary(x => (BarColor)ColorValueToRandomize[x], x => x);
+            Debug.LogFormat("<Bar Charts> Colors : {0}", string.Join(",", ColorValues.Select(x => $"{x.Key}=>{x.Value}").ToArray()));
+            BarRules = rng.ShuffleFisherYates(Enum.GetValues(typeof(BarRule)).Cast<BarRule>().ToList()).Take(3).ToArray();
+            Debug.LogFormat("<Bar Charts> Rules : {0}", string.Join(",", BarRules.Select(b=>b.ToString()).ToArray()));
+            YAxisLabels = rng.ShuffleFisherYates(Enum.GetValues(typeof(YAxisLabel)).Cast<YAxisLabel>().ToList()).Take(2).ToArray();
+            Debug.LogFormat("<Bar Charts> Labels : {0}", string.Join(",", YAxisLabels.Select(l => l.ToString()).ToArray()));
+        }
+    }
+
     void Awake()
     {
         _moduleID = _moduleIdCounter++;
@@ -133,29 +181,24 @@ public class BarChartsScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        SetupRuleseed();
         Calculate();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     void Calculate()
     {
         HeightOrder = Enumerable.Range(1, 4).Select(x => Rnd.Range(x - RandomTolerance, x + RandomTolerance)).ToList().Shuffle();
         var intHeightOrder = HeightOrder.Select(x => Mathf.RoundToInt(x)).ToList();
-        UnitIsPopularity = Rnd.Range(0, 2) == 0;
-        UnitRend.text = UnitIsPopularity ? "Popularity" : "Frequency";
-        BarColours = Enumerable.Range(0, 4).ToList().Shuffle();
-        ChosenSet = AllVariableSets.PickRandom().Copy();
+        yAxisLabel = YAxisLabels.PickRandom();
+        UnitRend.text = yAxisLabel.ToString();
+        BarColours = Enumerable.Range(0, 4).Select(i => (BarColor)i).ToList().Shuffle();
+        ChosenSet = VariableSets.PickRandom().Copy();
         var shuffledSet = ChosenSet.Shuffle();
         for (int i = 0; i < BarTextRends.Length; i++)
             BarTextRends[i].text = shuffledSet.Variables[i];
 
         Debug.LogFormat("[Bar Charts #{0}] Bar sizes (1 = shortest, 4 = tallest): {1}.", _moduleID, intHeightOrder.Join(", "));
-        Debug.LogFormat("[Bar Charts #{0}] Bar colours: {1}.", _moduleID, BarColours.Select(x => new[] { "red", "yellow", "green", "blue" }[x]).Join(", "));
+        Debug.LogFormat("[Bar Charts #{0}] Bar colours: {1}.", _moduleID, BarColours.Join(", "));
         Debug.LogFormat("[Bar Charts #{0}] Bar labels: {1} (category: {2}).", _moduleID, BarTextRends.Select(x => !Deabbreviator.ContainsKey(x.text) ? x.text : Deabbreviator[x.text]).Join(", "), ChosenSet.Name );
 
         var labelValues = new List<int>();
@@ -181,50 +224,60 @@ public class BarChartsScript : MonoBehaviour
             CorrectAnswer.Add(Enumerable.Range(0, 4).Where(x => intHeightOrder[x] == a).First());
             Debug.LogFormat("[Bar Charts #{0}] The {1}shortest bar is Bar {2}, so it is first in the order.", _moduleID, new[] { "", "second-", "third-", "fourth-" }[a - 1], CorrectAnswer.Last() + 1);
         }
-
-        var b = new[] { BarColours[0], BarColours[intHeightOrder.IndexOf(1)], BarColours[CorrectAnswer.First()] }.Sum() % 3;
+        int[] bValues = GetBValues(intHeightOrder);
+        var b = bValues.Sum() % 3;
         if (b < CorrectAnswer.First())
             CorrectAnswer.Add(b);
         else
             CorrectAnswer.Add(b + 1);
-        Debug.LogFormat("[Bar Charts #{0}] The leftmost bar, shortest bar and first bar in the order have values {1}, {2} and {3} respectively. This means that Bar {4} is second in the order.",
-            _moduleID, BarColours[0], BarColours[intHeightOrder.IndexOf(1)], BarColours[CorrectAnswer.First()], CorrectAnswer.Last() + 1);
+        Debug.LogFormat("[Bar Charts #{0}] The {1}, {2} and {3} have values {4}, {5} and {6} respectively. This means that Bar {7} is second in the order.",
+            _moduleID, BarRules[0].ToLogString(), BarRules[1].ToLogString(), BarRules[2].ToLogString(),
+            bValues[0], bValues[1], bValues[2], CorrectAnswer.Last() + 1);
 
-        var competitors = Enumerable.Range(0, 4).Where(x => !CorrectAnswer.Contains(x)).ToList();
-        if (UnitIsPopularity)
+        var competitors = Enumerable.Range(0, 4).Except(CorrectAnswer).ToList();
+        Debug.LogFormat("[Bar Charts #{0}] The unit on the left is {1}.", _moduleID, yAxisLabel);
+        IEnumerable<int> orderedCompetitors;
+        switch (yAxisLabel)
         {
-            Debug.LogFormat("[Bar Charts #{0}] The unit on the left is Popularity.", _moduleID);
-            if (intHeightOrder[competitors[0]] < intHeightOrder[competitors[1]])
-            {
-                CorrectAnswer.Add(competitors[0]);
-                CorrectAnswer.Add(competitors[1]);
-                Debug.LogFormat("[Bar Charts #{0}] Bar {1} is shorter than Bar {2}, so it is third in the order, and Bar {2} is fourth.", _moduleID, competitors[0] + 1, competitors[1] + 1);
-            }
-            else
-            {
-                CorrectAnswer.Add(competitors[1]);
-                CorrectAnswer.Add(competitors[0]);
-                Debug.LogFormat("[Bar Charts #{0}] Bar {1} is shorter than Bar {2}, so it is third in the order, and Bar {2} is fourth.", _moduleID, competitors[1] + 1, competitors[0] + 1);
-            }
+            case YAxisLabel.Popularity:
+                orderedCompetitors = competitors.OrderBy(c => intHeightOrder[c]);
+                break;
+            case YAxisLabel.Frequency:
+                orderedCompetitors = competitors.OrderByDescending(c => intHeightOrder[c]);
+                break;
+            case YAxisLabel.Responses:
+                orderedCompetitors = competitors.OrderBy(c => c);
+                break;
+            case YAxisLabel.Occurances:
+                orderedCompetitors = competitors.OrderByDescending(c => c);
+                break;
+            case YAxisLabel.Density:
+                orderedCompetitors = competitors.OrderBy(c => ColorValues[BarColours[c]]);
+                break;
+            case YAxisLabel.Magnitude:
+                orderedCompetitors = competitors.OrderByDescending(c => ColorValues[BarColours[c]]);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(yAxisLabel), yAxisLabel.ToString());
         }
-        else
-        {
-            Debug.LogFormat("[Bar Charts #{0}] The unit on the left is Frequency.", _moduleID);
-            if (intHeightOrder[competitors[0]] > intHeightOrder[competitors[1]])
-            {
-                CorrectAnswer.Add(competitors[0]);
-                CorrectAnswer.Add(competitors[1]);
-                Debug.LogFormat("[Bar Charts #{0}] Bar {1} is shorter than Bar {2}, so it is third in the order, and Bar {2} is fourth.", _moduleID, competitors[0] + 1, competitors[1] + 1);
-            }
-            else
-            {
-                CorrectAnswer.Add(competitors[1]);
-                CorrectAnswer.Add(competitors[0]);
-                Debug.LogFormat("[Bar Charts #{0}] Bar {1} is taller than Bar {2}, so it is third in the order, and Bar {2} is fourth.", _moduleID, competitors[1] + 1, competitors[0] + 1);
-            }
-        }
-
+        CorrectAnswer.AddRange(orderedCompetitors.ToList());
+        Debug.LogFormat("[Bar Charts #{0}] Bar {1} {2} than Bar {3}, so it is third in the order, and Bar {2} is fourth.", _moduleID, orderedCompetitors.ToList()[0] + 1, yAxisLabel.GetComparativeWord(), orderedCompetitors.ToList()[1] + 1);
         Debug.LogFormat("[Bar Charts #{0}] This means that the final order is {1}.", _moduleID, CorrectAnswer.Select(x => x + 1).Join(", "));
+    }
+
+    int[] GetBValues(List<int> intHeightOrder)
+    {
+        int[] values = new int[3];
+        for(int i = 0; i < 3; i++)
+        {
+            if ((int)BarRules[i] <= 3)
+                values[i] = ColorValues[BarColours[(int)BarRules[i]]];
+            else if (BarRules[i] != BarRule.FirstInOrder)
+                values[i] = ColorValues[BarColours[intHeightOrder.IndexOf(BarRules[i] - BarRule.Shortest + 1)]];
+            else
+                values[i] = ColorValues[BarColours[CorrectAnswer.First()]];
+        }
+        return values;
     }
 
     void SelectBar(int pos)
@@ -239,7 +292,7 @@ public class BarChartsScript : MonoBehaviour
         else
         {
             Module.HandleStrike();
-            Debug.LogFormat("[Bar Charts #{0}] You pressed Bar {1}, which was incorrect — I expected Bar {2}. Strike!", _moduleID, pos + 1, CorrectAnswer[CorrectPresses.Count()]);
+            Debug.LogFormat("[Bar Charts #{0}] You pressed Bar {1}, which was incorrect — I expected Bar {2}. Strike!", _moduleID, pos + 1, CorrectAnswer[CorrectPresses.Count()] + 1);
         }
         if (CorrectPresses.Count() == 4)
             HandleSolve();
@@ -255,8 +308,8 @@ public class BarChartsScript : MonoBehaviour
 
     void SetBarColour(int pos, bool invert)
     {
-        Bases[pos].color = FindBarColour(BarColours[pos], invert ? 1 : 0);
-        Colourings[pos].color = FindBarColour(BarColours[pos], invert ? 0 : 1);
+        Bases[pos].color = FindBarColour((int)BarColours[pos], invert ? 1 : 0);
+        Colourings[pos].color = FindBarColour((int)BarColours[pos], invert ? 0 : 1);
     }
 
     void HandleSolve()
@@ -278,8 +331,8 @@ public class BarChartsScript : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             Selectables[i].transform.localScale = new Vector3(2, 1, 2);
-            Bases[i].color = FindBarColour(BarColours[i], 0);
-            Colourings[i].color = FindBarColour(BarColours[i], 1);
+            Bases[i].color = FindBarColour((int)BarColours[i], 0);
+            Colourings[i].color = FindBarColour((int)BarColours[i], 1);
             Highlights[i].transform.parent.localScale = FindBarScale(HeightOrder[i], 0, 0);
             Bases[i].transform.parent.localScale = FindBarScale(HeightOrder[i], 1, 0);
             Colourings[i].transform.parent.localScale = FindBarScale(HeightOrder[i], 2, 0);

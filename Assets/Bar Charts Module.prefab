@@ -156,6 +156,7 @@ GameObject:
   - component: {fileID: 114386528089697282}
   - component: {fileID: 114238132301482476}
   - component: {fileID: 114175618030652058}
+  - component: {fileID: 114870637244900966}
   m_Layer: 0
   m_Name: Bar Charts Module
   m_TagString: Untagged
@@ -1161,6 +1162,7 @@ MonoBehaviour:
   - {fileID: 114489846925604226}
   - {fileID: 114322838267134244}
   ModuleBG: {fileID: 23605247419723452}
+  RuleSeed: {fileID: 114870637244900966}
 --- !u!114 &114177633998686064
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1929,6 +1931,18 @@ MonoBehaviour:
   ModuleType: GSBarCharts
   ModuleDisplayName: Bar Charts
   RequiresTimerVisibility: 0
+--- !u!114 &114870637244900966
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1357071248244726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adf69c2de51bd3c43bbd9bc22578ee08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _seed: 1
 --- !u!222 &222017704633878592
 CanvasRenderer:
   m_ObjectHideFlags: 1
