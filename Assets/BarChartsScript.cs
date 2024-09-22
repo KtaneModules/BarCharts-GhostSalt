@@ -6,6 +6,7 @@ using UnityEngine;
 using KModkit;
 using Rnd = UnityEngine.Random;
 using UnityEngine.UI;
+using Assets;
 
 public class BarChartsScript : MonoBehaviour
 {
@@ -64,6 +65,7 @@ public class BarChartsScript : MonoBehaviour
     };
 
     private Dictionary<BarColor, int> ColorValues;
+    private BarRule[] BarRules;
 
     private VariableSet ChosenSet;
     private Coroutine InitAnimCoroutine;
@@ -140,6 +142,7 @@ public class BarChartsScript : MonoBehaviour
             Debug.LogFormat("Ruleseed is 1.");
             VariableSets = AllVariableSets.Take(22).ToArray(); //Take the original 22 lists
             ColorValues = Enumerable.Range(0, 4).ToDictionary(x => (BarColor)x, x => x);
+            BarRules = new BarRule[] { BarRule.Leftmost, BarRule.Shortest, BarRule.FirstInOrder };
         }
         else
         {
@@ -148,6 +151,8 @@ public class BarChartsScript : MonoBehaviour
             List<int> ColorValueToRandomize = rng.ShuffleFisherYates(Enumerable.Range(0, 4).ToList());
             ColorValues = Enumerable.Range(0, 4).ToDictionary(x => (BarColor)x, x => ColorValueToRandomize[x]);
             Debug.LogFormat("<Bar Charts> Colors : {0}", string.Join(",", ColorValues.Select(x => $"{x.Key}=>{x.Value}").ToArray()));
+            BarRules = rng.ShuffleFisherYates(Enum.GetValues(typeof(BarRule)).Cast<BarRule>().ToList()).Take(3).ToArray();
+            Debug.LogFormat("<Bar Charts> Rules : {0}", string.Join(",", BarRules.Select(b=>b.ToString()).ToArray()));
         }
     }
 
@@ -220,14 +225,15 @@ public class BarChartsScript : MonoBehaviour
             CorrectAnswer.Add(Enumerable.Range(0, 4).Where(x => intHeightOrder[x] == a).First());
             Debug.LogFormat("[Bar Charts #{0}] The {1}shortest bar is Bar {2}, so it is first in the order.", _moduleID, new[] { "", "second-", "third-", "fourth-" }[a - 1], CorrectAnswer.Last() + 1);
         }
-
-        var b = new[] { ColorValues[BarColours[0]], ColorValues[BarColours[intHeightOrder.IndexOf(1)]], ColorValues[BarColours[CorrectAnswer.First()]] }.Sum() % 3;
+        int[] bValues = GetBValues(intHeightOrder);
+        var b = bValues.Sum() % 3;
         if (b < CorrectAnswer.First())
             CorrectAnswer.Add(b);
         else
             CorrectAnswer.Add(b + 1);
-        Debug.LogFormat("[Bar Charts #{0}] The leftmost bar, shortest bar and first bar in the order have values {1}, {2} and {3} respectively. This means that Bar {4} is second in the order.",
-            _moduleID, ColorValues[BarColours[0]], ColorValues[BarColours[intHeightOrder.IndexOf(1)]], ColorValues[BarColours[CorrectAnswer.First()]], CorrectAnswer.Last() + 1);
+        Debug.LogFormat("[Bar Charts #{0}] The {1}, {2} and {3} have values {4}, {5} and {6} respectively. This means that Bar {7} is second in the order.",
+            _moduleID, BarRules[0].ToLogString(), BarRules[1].ToLogString(), BarRules[2].ToLogString(),
+            bValues[0], bValues[1], bValues[2], CorrectAnswer.Last() + 1);
 
         var competitors = Enumerable.Range(0, 4).Where(x => !CorrectAnswer.Contains(x)).ToList();
         if (UnitIsPopularity)
@@ -264,6 +270,21 @@ public class BarChartsScript : MonoBehaviour
         }
 
         Debug.LogFormat("[Bar Charts #{0}] This means that the final order is {1}.", _moduleID, CorrectAnswer.Select(x => x + 1).Join(", "));
+    }
+
+    int[] GetBValues(List<int> intHeightOrder)
+    {
+        int[] values = new int[3];
+        for(int i = 0; i < 3; i++)
+        {
+            if ((int)BarRules[i] <= 3)
+                values[i] = ColorValues[BarColours[(int)BarRules[i]]];
+            else if (BarRules[i] != BarRule.FirstInOrder)
+                values[i] = ColorValues[BarColours[intHeightOrder.IndexOf(BarRules[i] - BarRule.Shortest + 1)]];
+            else
+                values[i] = ColorValues[BarColours[CorrectAnswer.First()]];
+        }
+        return values;
     }
 
     void SelectBar(int pos)
