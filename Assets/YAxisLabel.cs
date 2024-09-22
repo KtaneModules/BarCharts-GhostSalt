@@ -6,7 +6,7 @@ namespace Assets
     {
         Popularity,
         Frequency,
-        Repsonses,
+        Responses,
         Occurances,
         Density,
         Magnitude
@@ -22,7 +22,7 @@ namespace Assets
                     return "is shorter";
                 case YAxisLabel.Frequency:
                     return "is taller";
-                case YAxisLabel.Repsonses:
+                case YAxisLabel.Responses:
                     return "is more to the left";
                 case YAxisLabel.Occurances:
                     return "is more to the right";
