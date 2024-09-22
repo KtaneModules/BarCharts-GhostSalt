@@ -63,10 +63,12 @@ public class BarChartsScript : MonoBehaviour
         { "Choc. Chip", "Chocolate Chip" }
     };
 
+    private Dictionary<BarColor, int> ColorValues;
+
     private VariableSet ChosenSet;
     private Coroutine InitAnimCoroutine;
     private List<float> HeightOrder = new List<float>();
-    private List<int> BarColours = new List<int>();
+    private List<BarColor> BarColours = new List<BarColor>();
     private List<int> CorrectAnswer = new List<int>();
     private List<int> CorrectPresses = new List<int>();
     private bool CannotPress = true, Solved, UnitIsPopularity;
@@ -96,6 +98,14 @@ public class BarChartsScript : MonoBehaviour
         {
             return string.Format("{0}: {1}", Name, string.Join(",", Variables));
         }
+    }
+
+    private enum BarColor : int
+    {
+        Red = 0,
+        Yellow,
+        Green,
+        Blue
     }
 
     private Vector3 FindBarScale(float height, int type, float t)
@@ -129,11 +139,15 @@ public class BarChartsScript : MonoBehaviour
         {
             Debug.LogFormat("Ruleseed is 1.");
             VariableSets = AllVariableSets.Take(22).ToArray(); //Take the original 22 lists
+            ColorValues = Enumerable.Range(0, 4).ToDictionary(x => (BarColor)x, x => x);
         }
         else
         {
             VariableSets = AllVariableSets.OrderBy(_ => rng.NextDouble()).Take(22).Select(vs => new VariableSet(vs.Name,vs.Variables.OrderBy(_ => rng.NextDouble()).ToArray())).ToArray();
             Debug.LogFormat("<Bar Charts> Ruleseed {0}: {1}", rng.Seed, string.Join("\r\n", VariableSets.Select(v => v.ToString()).ToArray()));
+            List<int> ColorValueToRandomize = rng.ShuffleFisherYates(Enumerable.Range(0, 4).ToList());
+            ColorValues = Enumerable.Range(0, 4).ToDictionary(x => (BarColor)x, x => ColorValueToRandomize[x]);
+            Debug.LogFormat("<Bar Charts> Colors : {0}", string.Join(",", ColorValues.Select(x => $"{x.Key}=>{x.Value}").ToArray()));
         }
     }
 
@@ -173,14 +187,14 @@ public class BarChartsScript : MonoBehaviour
         var intHeightOrder = HeightOrder.Select(x => Mathf.RoundToInt(x)).ToList();
         UnitIsPopularity = Rnd.Range(0, 2) == 0;
         UnitRend.text = UnitIsPopularity ? "Popularity" : "Frequency";
-        BarColours = Enumerable.Range(0, 4).ToList().Shuffle();
+        BarColours = Enumerable.Range(0, 4).Select(i => (BarColor)i).ToList().Shuffle();
         ChosenSet = VariableSets.PickRandom().Copy();
         var shuffledSet = ChosenSet.Shuffle();
         for (int i = 0; i < BarTextRends.Length; i++)
             BarTextRends[i].text = shuffledSet.Variables[i];
 
         Debug.LogFormat("[Bar Charts #{0}] Bar sizes (1 = shortest, 4 = tallest): {1}.", _moduleID, intHeightOrder.Join(", "));
-        Debug.LogFormat("[Bar Charts #{0}] Bar colours: {1}.", _moduleID, BarColours.Select(x => new[] { "red", "yellow", "green", "blue" }[x]).Join(", "));
+        Debug.LogFormat("[Bar Charts #{0}] Bar colours: {1}.", _moduleID, BarColours.Join(", "));
         Debug.LogFormat("[Bar Charts #{0}] Bar labels: {1} (category: {2}).", _moduleID, BarTextRends.Select(x => !Deabbreviator.ContainsKey(x.text) ? x.text : Deabbreviator[x.text]).Join(", "), ChosenSet.Name );
 
         var labelValues = new List<int>();
@@ -207,13 +221,13 @@ public class BarChartsScript : MonoBehaviour
             Debug.LogFormat("[Bar Charts #{0}] The {1}shortest bar is Bar {2}, so it is first in the order.", _moduleID, new[] { "", "second-", "third-", "fourth-" }[a - 1], CorrectAnswer.Last() + 1);
         }
 
-        var b = new[] { BarColours[0], BarColours[intHeightOrder.IndexOf(1)], BarColours[CorrectAnswer.First()] }.Sum() % 3;
+        var b = new[] { ColorValues[BarColours[0]], ColorValues[BarColours[intHeightOrder.IndexOf(1)]], ColorValues[BarColours[CorrectAnswer.First()]] }.Sum() % 3;
         if (b < CorrectAnswer.First())
             CorrectAnswer.Add(b);
         else
             CorrectAnswer.Add(b + 1);
         Debug.LogFormat("[Bar Charts #{0}] The leftmost bar, shortest bar and first bar in the order have values {1}, {2} and {3} respectively. This means that Bar {4} is second in the order.",
-            _moduleID, BarColours[0], BarColours[intHeightOrder.IndexOf(1)], BarColours[CorrectAnswer.First()], CorrectAnswer.Last() + 1);
+            _moduleID, ColorValues[BarColours[0]], ColorValues[BarColours[intHeightOrder.IndexOf(1)]], ColorValues[BarColours[CorrectAnswer.First()]], CorrectAnswer.Last() + 1);
 
         var competitors = Enumerable.Range(0, 4).Where(x => !CorrectAnswer.Contains(x)).ToList();
         if (UnitIsPopularity)
@@ -280,8 +294,8 @@ public class BarChartsScript : MonoBehaviour
 
     void SetBarColour(int pos, bool invert)
     {
-        Bases[pos].color = FindBarColour(BarColours[pos], invert ? 1 : 0);
-        Colourings[pos].color = FindBarColour(BarColours[pos], invert ? 0 : 1);
+        Bases[pos].color = FindBarColour((int)BarColours[pos], invert ? 1 : 0);
+        Colourings[pos].color = FindBarColour((int)BarColours[pos], invert ? 0 : 1);
     }
 
     void HandleSolve()
@@ -303,8 +317,8 @@ public class BarChartsScript : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             Selectables[i].transform.localScale = new Vector3(2, 1, 2);
-            Bases[i].color = FindBarColour(BarColours[i], 0);
-            Colourings[i].color = FindBarColour(BarColours[i], 1);
+            Bases[i].color = FindBarColour((int)BarColours[i], 0);
+            Colourings[i].color = FindBarColour((int)BarColours[i], 1);
             Highlights[i].transform.parent.localScale = FindBarScale(HeightOrder[i], 0, 0);
             Bases[i].transform.parent.localScale = FindBarScale(HeightOrder[i], 1, 0);
             Colourings[i].transform.parent.localScale = FindBarScale(HeightOrder[i], 2, 0);
