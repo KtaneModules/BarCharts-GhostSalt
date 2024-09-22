@@ -61,6 +61,8 @@
             ["Non-Percussion Instruments",["Viola", "Euphonium", "Trumpet", "Cor Anglais", "Bassoon", "Clarinet", "Trombone", "Flugelhorn", "Piccolo", "Harp", "French Horn", "Flute", "Oboe", "Tuba", "Violin", "Double Bass", "Cello", "Saxophone", "Cornet"]],
             ["Cast of BFDI",["Golf Ball", "Coiny", "Pin", "Ice Cube", "Spongy", "David", "Woody", "Snowball", "Pen", "Pencil", "Bubble", "Teardrop", "Eraser", "Flower", "Needle", "Rocky", "Firey", "Match", "Blocky", "Leafy", "Tennis Ball"]],
         ]
+
+        var colors = ["Red", "Yellow", "Green", "Blue"];
         
         function setDefaultRules(rnd) 
         {
@@ -90,6 +92,12 @@
                 cell.className = "big-number";
                 cell.textContent = variableSets[i][1].length;
             }
+
+            colors = rnd.shuffleFisherYates(colors);
+            console.log(colors);
+            var b = document.getElementsByClassName("equalise");
+                for (var j = 0; j < 4; j++)
+                    b[0].cells[j].textContent = colors[j];
         }
     </script>
 </head>

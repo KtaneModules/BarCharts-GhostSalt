@@ -152,7 +152,7 @@ public class BarChartsScript : MonoBehaviour
             VariableSets = AllVariableSets.Select(vs => new VariableSet(vs.Name,rng.ShuffleFisherYates(vs.Variables))).ToArray();
             Debug.LogFormat("<Bar Charts> Ruleseed {0}: {1}", rng.Seed, string.Join("\r\n", VariableSets.Select(v => v.ToString()).ToArray()));
             List<int> ColorValueToRandomize = rng.ShuffleFisherYates(Enumerable.Range(0, 4).ToList());
-            ColorValues = Enumerable.Range(0, 4).ToDictionary(x => (BarColor)x, x => ColorValueToRandomize[x]);
+            ColorValues = Enumerable.Range(0, 4).ToDictionary(x => (BarColor)ColorValueToRandomize[x], x => x);
             Debug.LogFormat("<Bar Charts> Colors : {0}", string.Join(",", ColorValues.Select(x => $"{x.Key}=>{x.Value}").ToArray()));
             BarRules = rng.ShuffleFisherYates(Enum.GetValues(typeof(BarRule)).Cast<BarRule>().ToList()).Take(3).ToArray();
             Debug.LogFormat("<Bar Charts> Rules : {0}", string.Join(",", BarRules.Select(b=>b.ToString()).ToArray()));
