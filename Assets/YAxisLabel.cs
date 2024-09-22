@@ -7,7 +7,7 @@ namespace Assets
         Popularity,
         Frequency,
         Responses,
-        Occurances,
+        Occurrences,
         Density,
         Magnitude
     }
@@ -24,7 +24,7 @@ namespace Assets
                     return "is taller";
                 case YAxisLabel.Responses:
                     return "is more to the left";
-                case YAxisLabel.Occurances:
+                case YAxisLabel.Occurrences:
                     return "is more to the right";
                 case YAxisLabel.Density:
                     return "has a smaller value";

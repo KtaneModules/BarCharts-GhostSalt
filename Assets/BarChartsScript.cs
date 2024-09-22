@@ -248,7 +248,7 @@ public class BarChartsScript : MonoBehaviour
             case YAxisLabel.Responses:
                 orderedCompetitors = competitors.OrderBy(c => c);
                 break;
-            case YAxisLabel.Occurances:
+            case YAxisLabel.Occurrences:
                 orderedCompetitors = competitors.OrderByDescending(c => c);
                 break;
             case YAxisLabel.Density:
