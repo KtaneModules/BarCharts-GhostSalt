@@ -235,7 +235,7 @@ public class BarChartsScript : MonoBehaviour
             _moduleID, BarRules[0].ToLogString(), BarRules[1].ToLogString(), BarRules[2].ToLogString(),
             bValues[0], bValues[1], bValues[2], CorrectAnswer.Last() + 1);
 
-        var competitors = Enumerable.Range(0, 4).Where(x => !CorrectAnswer.Contains(x)).ToList();
+        var competitors = Enumerable.Range(0, 4).Except(CorrectAnswer).ToList();
         if (UnitIsPopularity)
         {
             Debug.LogFormat("[Bar Charts #{0}] The unit on the left is Popularity.", _moduleID);
@@ -299,7 +299,7 @@ public class BarChartsScript : MonoBehaviour
         else
         {
             Module.HandleStrike();
-            Debug.LogFormat("[Bar Charts #{0}] You pressed Bar {1}, which was incorrect — I expected Bar {2}. Strike!", _moduleID, pos + 1, CorrectAnswer[CorrectPresses.Count()]);
+            Debug.LogFormat("[Bar Charts #{0}] You pressed Bar {1}, which was incorrect — I expected Bar {2}. Strike!", _moduleID, pos + 1, CorrectAnswer[CorrectPresses.Count()] + 1);
         }
         if (CorrectPresses.Count() == 4)
             HandleSolve();
